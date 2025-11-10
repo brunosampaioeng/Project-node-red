@@ -29,8 +29,8 @@ framework/library or anything related.
 
 # Initialization:
 ### 1. Clone this repository:
-```bash
-https://github.com/brunosampaioeng/Project-node-red.git```
+```bash```
+```https://github.com/brunosampaioeng/Project-node-red.git ```
 
 ### 2. Navigate to the project directory:
 

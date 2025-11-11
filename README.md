@@ -66,7 +66,7 @@ This page will contain a catalog of brokers from BrazilAPI following this logic:
 ```${Nome_Social} - ${Municipio} / ${CNPJ}```
 
 ### Acesse to the Zip Code Searcher:
-```http://localhost:1880/zipcode/{cep}```
+```http://localhost:1880/zipcode```
 
 Replace {cep} with the actual zip code you want to search
 
@@ -76,5 +76,5 @@ Replace {cep} with the actual zip code you want to search
 - City
 - State
 
-### If the ZIP code is invalid, an error message will appear in a pop-up notifying you.
+### If the postal code is invalid, a text message will appear above the postal code search field.
 

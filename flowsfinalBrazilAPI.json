@@ -1,0 +1,381 @@
+[
+    {
+        "id": "c88c4d61023e843b",
+        "type": "tab",
+        "label": "BrokerCatalog",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "79c280fe16a0eeb0",
+        "type": "tab",
+        "label": "ZipCodeSearch",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "56c6bae7616ece23",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "F1B7C",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "079d30fee717c6fa",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "f83c2f1e673685aa",
+        "type": "ui-theme",
+        "name": "Theme Test",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#054761",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "dfd978688be0400e",
+        "type": "inject",
+        "z": "c88c4d61023e843b",
+        "name": "Trigger Request",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "x": 120,
+        "y": 60,
+        "wires": [
+            [
+                "92caad0dc901a050"
+            ]
+        ]
+    },
+    {
+        "id": "92caad0dc901a050",
+        "type": "http request",
+        "z": "c88c4d61023e843b",
+        "name": "Fetch Brokers",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "query",
+        "url": "https://brasilapi.com.br/api/cvm/corretoras/v1",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 320,
+        "y": 60,
+        "wires": [
+            [
+                "c97ca853b7646aa3"
+            ]
+        ]
+    },
+    {
+        "id": "c97ca853b7646aa3",
+        "type": "function",
+        "z": "c88c4d61023e843b",
+        "name": "Format Brokers",
+        "func": "let brokers = msg.payload;\nlet formattedBrokers = brokers.map(broker => {\n    return `<li>${broker.nome_social} - ${broker.municipio} / ${broker.cnpj}</li>`;\n});\nmsg.payload = formattedBrokers.join('').replace(/,/g, '');\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 60,
+        "wires": [
+            [
+                "22691b3e714dca22"
+            ]
+        ]
+    },
+    {
+        "id": "22691b3e714dca22",
+        "type": "template",
+        "z": "c88c4d61023e843b",
+        "name": "Display Brokers",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<style>\n:root {\n--bg: #0f1724;\n--card: #0b1220;\n--muted: #94a3b8;\n--accent: #06b6d4;\n--text: #e6eef8;\n--radius: 12px;\n}\nbody {\nmargin: 0;\nfont-family: system-ui, sans-serif;\nbackground: linear-gradient(180deg, var(--bg), #071226 60%);\ncolor: var(--text);\npadding: 24px;\n}\n.container { max-width: 1000px; margin: auto; }\nheader { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }\n.logo { width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent), #7c3aed); border-radius:\nvar(--radius); display: flex; justify-content: center; align-items: center; font-weight: bold; box-shadow: 0 6px 16px\nrgba(0,0,0,0.4); }\nmain { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }\n@media (max-width: 900px) { main { grid-template-columns: 1fr; } }\n.card { background: var(--card); padding: 16px; border-radius: var(--radius); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }\nul.brokers { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }\n.broker { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); border-radius: 8px;\npadding: 10px; }\n.meta, .cnpj { color: var(--muted); font-size: 13px; }\n.search-row { display: flex; gap: 8px; margin-top: 8px; }\n.search-row input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background:\ntransparent; color: var(--text); }\nfooter { margin-top: 16px; color: var(--muted); font-size: 13px; }\n.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); }\n</style>\n\n<script>\n    console.log({{{payload}}})\n    </script>\n<section class=\"card\" aria-labelledby=\"brokers-heading\">\n    <h2 id=\"brokers-heading\">Catalog Broker</h2>\n    <p class=\"small\">Dados via <a href=\"https://brasilapi.com.br\" target=\"_blank\" rel=\"noopener\">BrazilAPI</a></p>\n    <div id=\"brokersStatus\" class=\"status\" role=\"status\" aria-live=\"polite\"></div>\n    <ul id=\"brokersList\" class=\"brokers\" tabindex=\"0\" aria-live=\"polite\">\n        {{{payload}}}\n    </ul>\n</section>\n\n",
+        "x": 720,
+        "y": 60,
+        "wires": [
+            [
+                "cdd9dfa99adf41df"
+            ]
+        ]
+    },
+    {
+        "id": "cdd9dfa99adf41df",
+        "type": "http response",
+        "z": "c88c4d61023e843b",
+        "name": "Send Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 920,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "375c2332a72359df",
+        "type": "http in",
+        "z": "c88c4d61023e843b",
+        "name": "",
+        "url": "/brokers",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "92caad0dc901a050"
+            ]
+        ]
+    },
+    {
+        "id": "58b02812e622cf49",
+        "type": "http in",
+        "z": "79c280fe16a0eeb0",
+        "name": "CEP Route",
+        "url": "/zipcode/:cep",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 360,
+        "y": 60,
+        "wires": [
+            [
+                "da07f7abd51852fe"
+            ]
+        ]
+    },
+    {
+        "id": "da07f7abd51852fe",
+        "type": "function",
+        "z": "79c280fe16a0eeb0",
+        "name": "Build CEP URL",
+        "func": "var cep = (msg.req.params.cep || '').replace(/\\D/g, '');\nif (!/^[0-9]{8}$/.test(cep)) {\n    msg.statusCode = 400;\n    msg.payload = { error: 'CEP inválido. Use 8 números.' };\n    return [null];\n}\nmsg.url = 'https://brasilapi.com.br/api/cep/v2/' + cep;\nreturn [msg];",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 60,
+        "wires": [
+            [
+                "3b824e0e192c8675"
+            ]
+        ]
+    },
+    {
+        "id": "3b824e0e192c8675",
+        "type": "http request",
+        "z": "79c280fe16a0eeb0",
+        "name": "Fetch CEP Details",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": true,
+        "headers": [],
+        "x": 790,
+        "y": 60,
+        "wires": [
+            [
+                "cc1aa6b2d25b4675"
+            ]
+        ]
+    },
+    {
+        "id": "cc1aa6b2d25b4675",
+        "type": "function",
+        "z": "79c280fe16a0eeb0",
+        "name": "Format CEP Data",
+        "func": "if (!msg.payload || msg.statusCode !== 200) {\n    msg.payload = `\n        <h2>CEP not found. Please check and try again.</h2>`;\n} else {\nlet details = msg.payload;\nmsg.payload = `\n    <h2>🗺️ Details for CEP: ${details.cep}</h2>\n    <p><strong>Street:</strong> ${details.street || 'N/A'}</p>\n    <p><strong>Neighborhood:</strong> ${details.neighborhood || 'N/A'}</p>\n    <p><strong>City:</strong> ${details.city}</p>\n    <p><strong>State:</strong> ${details.state}</p>`;\n    }\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1010,
+        "y": 60,
+        "wires": [
+            [
+                "54ed63133256f0ae"
+            ]
+        ]
+    },
+    {
+        "id": "54ed63133256f0ae",
+        "type": "template",
+        "z": "79c280fe16a0eeb0",
+        "name": "CEP Response Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CEP Details</title>\n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" crossorigin=\"anonymous\">\n    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">\n</head>\n\n<style>\n    :root {\n    --bg: #0f1724;\n    --card: #0b1220;\n    --muted: #94a3b8;\n    --accent: #06b6d4;\n    --text: #e6eef8;;\n    --radius: 12px;\n    }\n    body {\n    margin: 0;\n    font-family: system-ui, sans-serif;\n    background: linear-gradient(180deg, var(--bg), #071226 60%);\n    color: var(--text);\n    padding: 24px;\n    }\n\n.card { background: var(--card); padding: 16px; border-radius: var(--radius); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }\n    .btn { background: var(--accent); border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; color: #021025;\n    font-weight: 600; }\n    .btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text); }\n    .meta, .cnpj { color: var(--muted); font-size: 13px; }\n    .search-row { display: flex; gap: 8px; margin-top: 8px; }\n    .search-row input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background:\n    transparent; color: var(--text); }\n    h2, p, label { color: #fff }\n    </style>\n\n<body>\n    <aside>\n        <div class=\"container mt-5\">\n            <div class=\"row justify-content-center\">\n                <div class=\"col-md-6\">\n                    <div class=\"card\">\n                        <div class=\"card-body\">\n                            {{{payload}}}\n                        </div>\n                    </div>\n                    <div class=\"mt-4\">\n                        <h3>Search for another CEP:</h3>\n                        <form method=\"get\" action=\"/zipcode\" class=\"d-flex\">\n                            <input type=\"text\" name=\"cep\" placeholder=\"Enter the ZIP code\" class=\"form-control me-2\" required />\n                            <button type=\"submit\" class=\"btn btn-outline-primary\"><i class=\"bi bi-search\">Search</i></button>\n                        </form>\n                    </div>\n                </div>\n            </div>\n        </div>\n            <div id=\"cepResult\" class=\"status\" aria-live=\"polite\"></div>\n        </div>\n    </aside>\n    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" crossorigin=\"anonymous\"></script>\n</body>\n</html>",
+        "x": 1230,
+        "y": 60,
+        "wires": [
+            [
+                "26710fa75cdca569"
+            ]
+        ]
+    },
+    {
+        "id": "26710fa75cdca569",
+        "type": "http response",
+        "z": "79c280fe16a0eeb0",
+        "name": "Send CEP Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 1450,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "85b34d26d7ab1225",
+        "type": "http in",
+        "z": "79c280fe16a0eeb0",
+        "name": "CEP Form Route",
+        "url": "/zipcode",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 160,
+        "wires": [
+            [
+                "0ed122aa4ef5e9bc"
+            ]
+        ]
+    },
+    {
+        "id": "0ed122aa4ef5e9bc",
+        "type": "function",
+        "z": "79c280fe16a0eeb0",
+        "name": "Check CEP Query",
+        "func": "var cep = msg.req.query.cep || '';\n\n// Se não houver CEP no query, apenas mostra o formulário\nif (!cep || cep.trim() === '') {\n    msg.payload = '<h2>ZIP code search</h2><p>Enter a ZIP code in the form below to search.</p>';\n    return [null, msg];\n}\n\n// Se houver CEP, prepara para buscar\ncep = cep.replace(/\\D/g, '');\nif (!/^[0-9]{8}$/.test(cep)) {\n    msg.payload = '<h2>Invalid ZIP code</h2><p> The postal code must contain exactly 8 digits.</p>';\n    return [null, msg];\n}\n\n// Define o CEP como parâmetro para a busca\nmsg.req.params = msg.req.params || {};\nmsg.req.params.cep = cep;\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 160,
+        "wires": [
+            [
+                "4a06ba200fc41397"
+            ],
+            [
+                "b72f1c05924bfb7b"
+            ]
+        ]
+    },
+    {
+        "id": "4a06ba200fc41397",
+        "type": "function",
+        "z": "79c280fe16a0eeb0",
+        "name": "Build CEP URL from Query",
+        "func": "var cep = msg.req.params.cep || '';\nmsg.url = 'https://brasilapi.com.br/api/cep/v2/' + cep;\nreturn [msg];",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 160,
+        "wires": [
+            [
+                "3b824e0e192c8675"
+            ]
+        ]
+    },
+    {
+        "id": "b72f1c05924bfb7b",
+        "type": "template",
+        "z": "79c280fe16a0eeb0",
+        "name": "Form Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Busca de CEP</title>\n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" crossorigin=\"anonymous\">\n    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css\">\n</head>\n\n<style>\n    :root {\n        --bg: #0f1724;\n        --card: #0b1220;\n        --muted: #94a3b8;\n        --accent: #06b6d4;\n        --text: #e6eef8;\n        --radius: 12px;\n    }\n    body {\n        margin: 0;\n        font-family: system-ui, sans-serif;\n        background: linear-gradient(180deg, var(--bg), #071226 60%);\n        color: var(--text);\n        padding: 24px;\n    }\n    .card { \n        background: var(--card); \n        padding: 16px; \n        border-radius: var(--radius); \n        box-shadow: 0 6px 16px rgba(0,0,0,0.4); \n    }\n    .btn { \n        background: var(--accent); \n        border: none; \n        padding: 10px 14px; \n        border-radius: 8px; \n        cursor: pointer; \n        color: #021025;\n        font-weight: 600; \n    }\n    .btn.secondary { \n        background: transparent; \n        border: 1px solid rgba(255,255,255,0.1); \n        color: var(--text); \n    }\n    h2, p, label { color: #fff; }\n    .search-row { \n        display: flex; \n        gap: 8px; \n        margin-top: 8px; \n    }\n    .search-row input { \n        flex: 1; \n        padding: 10px; \n        border-radius: 8px; \n        border: 1px solid rgba(255,255,255,0.1); \n        background: transparent; \n        color: var(--text); \n    }\n</style>\n\n<body>\n    <div class=\"container mt-5\">\n        <div class=\"row justify-content-center\">\n            <div class=\"col-md-6\">\n                <div class=\"card\">\n                    <div class=\"card-body\">\n                        {{{payload}}}\n                    </div>\n                </div>\n                <div class=\"mt-4\">\n                    <h3>ZIP code search:</h3>\n                    <form method=\"get\" action=\"/zipcode\" class=\"d-flex\">\n                        <input type=\"text\" name=\"cep\" placeholder=\"Enter zip code (only numbers)\" class=\"form-control me-2\" pattern=\"[0-9]{8}\" required />\n                        <button type=\"submit\" class=\"btn btn-outline-primary\"><i class=\"bi bi-search\"></i> Search</button>\n                    </form>\n                </div>\n            </div>\n        </div>\n    </div>\n    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" crossorigin=\"anonymous\"></script>\n</body>\n</html>",
+        "x": 790,
+        "y": 160,
+        "wires": [
+            [
+                "26710fa75cdca569"
+            ]
+        ]
+    },
+    {
+        "id": "84c4001922a19bf8",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.29.0"
+        }
+    }
+]
